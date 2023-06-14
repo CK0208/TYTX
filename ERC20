@@ -1,0 +1,43 @@
+from web3 import Web3
+
+# Connect to an Ethereum node
+web3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/your-infura-project-id'))
+
+# ERC20 Token Contract ABI
+token_contract_abi = [
+    {
+        "constant": True,
+        "inputs": [{"name": "_owner", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"name": "balance", "type": "uint256"}],
+        "payable": False,
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
+
+def get_token_balance(token_address, wallet_address):
+    try:
+        # Create the contract instance
+        contract = web3.eth.contract(address=token_address, abi=token_contract_abi)
+
+        # Call the balanceOf function
+        balance = contract.functions.balanceOf(wallet_address).call()
+
+        return balance
+    except Exception as e:
+        return str(e)
+
+def main():
+    token_address = input("Enter the ERC20 token address: ")
+    wallet_address = input("Enter the wallet address: ")
+
+    balance = get_token_balance(token_address, wallet_address)
+
+    if isinstance(balance, int):
+        print(f"The token balance of {wallet_address} is {balance}.")
+    else:
+        print("Failed to retrieve the token balance. Please check the contract address and wallet address.")
+
+if __name__ == '__main__':
+    main()
